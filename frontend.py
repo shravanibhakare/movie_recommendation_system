@@ -1,12 +1,11 @@
 import streamlit as st
-import pickle
+import pandas as pd
 import requests
 from urllib.parse import quote_plus
 import difflib
 
 # === Load Data ===
-movies = pickle.load(open('movie_list.pkl', 'rb'))
-similarity = pickle.load(open('similarity.pkl', 'rb'))
+movies = pd.read_csv("tmdb_5000_movies.csv")
 
 # === YouTube Search & Poster ===
 def fetch_youtube_trailer_id(movie_title):
@@ -22,28 +21,21 @@ def fetch_youtube_trailer_id(movie_title):
     except:
         return None
 
-# === Recommender Logic ===
+# === Recommender Logic (simple matching without similarity.pkl) ===
 def recommend(movie):
     movie = movie.lower()
     all_titles = movies['title'].str.lower().tolist()
-    close_matches = difflib.get_close_matches(movie, all_titles, n=1, cutoff=0.6)
-
-    if not close_matches:
-        return [], [], []
-
-    actual_title = movies[movies['title'].str.lower() == close_matches[0]].iloc[0].title
-    index = movies[movies['title'] == actual_title].index[0]
-    distances = sorted(list(enumerate(similarity[index])), reverse=True, key=lambda x: x[1])
+    close_matches = difflib.get_close_matches(movie, all_titles, n=5, cutoff=0.5)
 
     recommended_titles = []
     youtube_ids = []
     wiki_links = []
 
-    for i in distances[1:6]:
-        title = movies.iloc[i[0]].title
-        yt_id = fetch_youtube_trailer_id(title)
-        wiki_link = f"https://en.wikipedia.org/wiki/{title.replace(' ', '_')}"
-        recommended_titles.append(title)
+    for title in close_matches:
+        actual_title = movies[movies['title'].str.lower() == title].iloc[0].title
+        yt_id = fetch_youtube_trailer_id(actual_title)
+        wiki_link = f"https://en.wikipedia.org/wiki/{actual_title.replace(' ', '_')}"
+        recommended_titles.append(actual_title)
         youtube_ids.append(yt_id)
         wiki_links.append(wiki_link)
 
@@ -73,6 +65,7 @@ if st.button("Show Recommendation"):
                 st.markdown(f"[📖 Wikipedia]({wikis[idx]})", unsafe_allow_html=True)
     else:
         st.warning("No similar movies found.")
+
 st.markdown("""
 <hr style="margin-top: 50px;">
 <div style='text-align: center; font-size: 14px; color: grey;'>
