@@ -17,16 +17,9 @@ This app suggests movies similar to the one you enter, along with:
 
 ---
 
-## 📂 Project Structure
-movie_recommendation_system/
-│── frontend.py # Streamlit app
-│── requirements.txt # Required Python packages
-│── tmdb_5000_movies.csv # Movies dataset
-│── tmdb_5000_credits.csv # Movie credits dataset
-│── README.md # Project documentation
 
 
----
+
 
 ## 🛠️ Installation & Setup
 
