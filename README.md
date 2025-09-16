@@ -27,7 +27,8 @@ This app suggests movies similar to the one you enter, along with:
    ```bash
    git clone git@github.com:shravanibhakare/movie_recommendation_system.git
    cd movie_recommendation_system
-#License 📝
+#  📝License 
+
 This project is licensed under the MIT License. 
 
 Contact 📧
